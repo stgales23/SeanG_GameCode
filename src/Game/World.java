@@ -44,6 +44,13 @@ public class World {
 		bathroom.addItem(paper);
 		hallway.addItem(towel);
 		
+		
+		Conbination combination = new Conbination("combination", "A small piece of paper with numbers written on it.");
+        Safe safe = new Safe("safe", "It's an impressive safe, securely locked.");
+
+        bedroom1.addItem(combination);
+        attic.addItem(safe);
+        
 		return bedroom;
 		}
 	}
