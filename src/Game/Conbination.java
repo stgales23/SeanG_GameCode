@@ -2,8 +2,8 @@ package Game;
 
 public class Conbination extends Item {
 
-    public Conbination(String name, String description) {
-        super(name, description);
+    public Conbination(String name, String de) {
+        super(name, de);
     }
     @Override
     public void use() {

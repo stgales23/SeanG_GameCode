@@ -2,8 +2,8 @@ package Game;
 
 public class Safe extends Item {
 
-    public Safe(String name, String description) {
-        super(name, description);
+    public Safe(String name, String de) {
+        super(name, de);
     }
 
     @Override
