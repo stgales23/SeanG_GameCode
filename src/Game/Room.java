@@ -56,8 +56,6 @@ public class Room {
 	 public void addItem(Item item) {
 	        items.put(item.getName(), item);
 	 	}
-	        // public void setItem(Item i) {
-		//	this.i = i;
 	    public Item getItem(String itemName) {
 	        return items.get(itemName); 
 	    }

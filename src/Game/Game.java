@@ -10,12 +10,10 @@ public class Game {
         runGame();
     }
 
-    // Static method to access currentRoom
     public static Room getRoom() {
         return currentRoom;
     }
 
-    // Centralized print method for output
     public static void print(Object obj) {
         System.out.println(obj.toString());
     }
