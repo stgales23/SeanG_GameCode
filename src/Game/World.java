@@ -2,12 +2,12 @@ package Game;
 
 public class World {
 	public static Room buildWorld() {
-		Room bedroom = new Room("You are in the bed room.");
-		Room hallway = new Room("You are in the hallway.");
-		Room bathroom = new Room("You are in the bathroom.");
-		Room bedroom1 = new Room("You are in guest room.");
-		Room downstairs = new Room("You are downstairs.");
-		Room attic = new Room("You are in the attic.");
+		Room bedroom = new Room("You are in the bed room.", "bedroom");
+		Room hallway = new Room("You are in the hallway.", "hallway");
+		Room bathroom = new Room("You are in the bathroom.", "bathroom");
+		Room bedroom1 = new Room("You are in guest room.", "bedroom1");
+		Room downstairs = new Room("You are downstairs.", "downstairs");
+		Room attic = new Room("You are in the attic.", "attic");
 		
 		bedroom.addExit(bedroom, 's');
 		bedroom.addExit(hallway, 'n');

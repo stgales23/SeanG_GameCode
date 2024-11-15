@@ -11,13 +11,13 @@ public class Room {
 	private Room up;
 	private Room down;
 	private HashMap<String, Item> items;
-	private boolean lock;
+	private boolean lock = false;
 	private String name;
 	
-	public Room(String describe) {
-		this.description = describe;
+	public Room(String describe, String name) {
+		description = describe;
 		this.name= name;
-		this.lock= false;
+
 		items=new HashMap<>();
 	}
 	 public String getName() {
@@ -26,7 +26,7 @@ public class Room {
 	    public void setName(String name) {
 	        this.name = name;
 	    }
-	    public boolean isLocked() {
+	    public boolean getLock() {
 	        return lock;
 	    }
 	    public void setLock(boolean lock) {
