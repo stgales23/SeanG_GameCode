@@ -30,7 +30,7 @@ public class World {
 		
 		attic.addExit(attic, 'u');
 		attic.addExit(hallway, 'd');
-			
+		attic.setLock(true);	
 		
 		Item toy = new Item("toy","Haven't seen this in ages");
 		Item book = new Item("book","Feels pretty light");
