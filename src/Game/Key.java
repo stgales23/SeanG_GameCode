@@ -5,9 +5,8 @@ public class Key extends Item {
 		 super(name, de);
     }
 	public void use() {
-		if(currentRoom.getExit(direct:'n') == null) {
+	//	if(currentRoom.getExit(direct:'n') == null) {
 		
 		
    }
-}
 }
