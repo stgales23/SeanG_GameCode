@@ -11,16 +11,31 @@ public class Game {
     public static ArrayList<Item> inventory = new ArrayList<Item>();
     public static HashMap<String, String> roomDescription = new HashMap<String, String>();
     public static Room currentRoom = World.buildWorld();
-    public static Scanner scan = new Scanner(System.in);  // Initialize scan here
-
+    public static Scanner scan = new Scanner(System.in);
+    
     public static void main(String[] args) {
         ReadTextFile();
         gui = new GameGUI();
-        print(currentRoom);
+        print(currentRoom.getDescription());
+        printRoomDescription();
     }
 
     public static void print(Object obj) {
-        gui.print(obj.toString());
+        if (gui != null) {
+            gui.print(obj.toString()); // Print to GUI if initialized
+        } else {
+            System.out.println(obj.toString()); // Fallback to console if GUI is not initialized
+        }
+    }
+
+    // Method to print room description to GUI
+    public static void printRoomDescription() {
+        String description = roomDescription.get(currentRoom.getName());
+        if (description != null) {
+            print(description);
+        } else {
+            print("You are in a room, but there is no description.");
+        }
     }
 
     public static void processCommand(String command) {
@@ -62,9 +77,9 @@ public class Game {
                 break;
 
             case "talk":
-                handleTalk(words, output);  // Handle NPC talk here
+                handleTalk(words, output);
                 break;
-                
+
             default:
                 output.append("I don't understand that command.\n");
                 break;
@@ -78,9 +93,9 @@ public class Game {
             output.append("Talk to whom?\n");
         } else {
             String npcName = words[1];
-            NPC npc = currentRoom.getNPC(npcName);  // Get the NPC from the current room
+            NPC npc = currentRoom.getNPC(npcName);
             if (npc != null) {
-                npc.talk();  // NPC interaction
+                npc.talk();
             } else {
                 output.append("No such NPC to talk to.\n");
             }
@@ -96,6 +111,7 @@ public class Game {
         } else {
             currentRoom = nextRoom;
             output.append("You moved to the " + currentRoom.getName() + ".\n");
+            printRoomDescription(); // Print new room description when the player moves
         }
     }
 
@@ -186,6 +202,7 @@ public class Game {
         return null;
     }
 
+    // Read the room descriptions from the file
     public static void ReadTextFile() {
         try {
             Scanner input = new Scanner(new File("room_desc"));

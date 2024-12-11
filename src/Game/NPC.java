@@ -1,9 +1,11 @@
 package Game;
 
+import javax.swing.JOptionPane;
+
 public class NPC {
     private String name;
-    private String desc; 
-    
+    private String desc;
+
     public NPC(String name, String desc) {
         this.name = name;
         this.desc = desc;
@@ -21,27 +23,33 @@ public class NPC {
         Game.print(name + ": " + dialog);
     }
 
- 
     public void talk() {
         Game.print("You talk to " + name + ".");
-      
         String[] options = {"Ask about the weather", "Ask for directions"};
         getResponse(options);
     }
 
- 
     public void getResponse(String[] options) {
+        String s = "";
         for (int i = 0; i < options.length; i++) {
-            Game.print("Option " + (i + 1) + ": " + options[i]);
+            s += "Option " + (i + 1) + ": " + options[i] + "\n";
         }
-        Game.print("Enter an option (1-" + options.length + "):");
-        int option = Game.scan.nextInt();  
+        s += "Enter an option (1-" + options.length + "):";
         
-   
-        response(option);
+        String input = JOptionPane.showInputDialog(null, s, "Choose an option", JOptionPane.QUESTION_MESSAGE);
+        
+        if (input != null) {
+            try {
+                int option = Integer.parseInt(input);
+                response(option);
+            } catch (NumberFormatException e) {
+                Game.print("Invalid input. Please enter a valid number.");
+            }
+        } else {
+            Game.print("No option selected.");
+        }
     }
 
-  
     public void response(int option) {
         switch (option) {
             case 1:
@@ -56,3 +64,4 @@ public class NPC {
         }
     }
 }
+
