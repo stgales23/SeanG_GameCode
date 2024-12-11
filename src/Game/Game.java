@@ -1,132 +1,182 @@
 package Game;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 public class Game {
-    static ArrayList<Item> inventory = new ArrayList<Item>();
+    private static GameGUI gui;
+    public static ArrayList<Item> inventory = new ArrayList<Item>();
+    public static HashMap<String, String> roomDescription = new HashMap<String, String>();
     public static Room currentRoom = World.buildWorld();
+    public static Scanner scan = new Scanner(System.in);  // Initialize scan here
 
     public static void main(String[] args) {
-        runGame();
-    }
-
-    public static Room getRoom() {
-        return currentRoom;
+        ReadTextFile();
+        gui = new GameGUI();
+        print(currentRoom);
     }
 
     public static void print(Object obj) {
-        System.out.println(obj.toString());
+        gui.print(obj.toString());
     }
 
-    public static void runGame() {
-        Scanner input = new Scanner(System.in);
-        String command;
+    public static void processCommand(String command) {
+        String[] words = command.split(" ");
+        StringBuilder output = new StringBuilder();
 
-        do {
-            System.out.println(currentRoom);
-            System.out.print("Which Direction? ");
-            command = input.nextLine();
-            String[] words = command.split(" ");
+        switch (words[0].toLowerCase()) {
+            case "e":
+            case "w":
+            case "n":
+            case "s":
+            case "u":
+            case "d":
+                handleMovement(words[0].charAt(0), output);
+                break;
 
-            switch (words[0]) {
-                case "e":
-                case "w":
-                case "n":
-                case "s":
-                case "u":
-                case "d":
-                	Room nextRoom = currentRoom.getExit((command.charAt(0)));
-                	if(nextRoom == null) {
-                		System.out.println("There is no exit.");
-                		break;
-                	}
-                	if (nextRoom.getLock() == true ) {
-                		System.out.println("You can not enter. The room is locked. ");
-                	}
-                	else {
-                		currentRoom = nextRoom;
-                	}
-                	break;
-                case "x":
-                    System.out.println("Thanks for walking through my game.");
-                    break;
-                case "take":
-                    if (words.length < 2) {
-                        System.out.println("Take what?");
-                    } else {
-                        String itemName = words[1];
-                        Item item = currentRoom.getItem(itemName);
-                        if (item != null) {
-                            inventory.add(item);
-                            currentRoom.removeItem(itemName);
-                            System.out.println(itemName + " added to inventory.");
-                        } else {
-                            System.out.println("No such item to take.");
-                        }
-                    }
-                    break;
-                case "look":
-                    if (words.length < 2) {
-                        System.out.println("Look at what?");
-                    } else {
-                        String itemName = words[1];
-                        Item item = getItemFromInventory(itemName);
-                        if (item != null) {
-                            System.out.println(item.getDescription());
-                        } else if (currentRoom.getItem(itemName) != null) {
-                            System.out.println(currentRoom.getItem(itemName).getDescription());
-                        } else {
-                            System.out.println("No such item to look at.");
-                        }
-                    }
-                    break;
-                case "i":
-                    if (inventory.isEmpty()) {
-                        System.out.println("Inventory empty");
-                    } else {
-                        for (Item i : inventory) {
-                            System.out.println(i);
-                        }
-                    }
-                    break;
-                case "use":
-                    if (words.length < 2) {
-                        System.out.println("Use what?");
-                    } else {
-                        String itemName = words[1];
-                        Item item = getItemFromInventory(itemName);
-                        if (item == null) {
-                            item = currentRoom.getItem(itemName);
-                        }
-                        if (item != null) {
-                            item.use();
-                        } else {
-                            System.out.println("No such item to use.");
-                        }
-                    }
-                    break;
-                case "open":
-                    if (words.length < 2) {
-                        System.out.println("Open what?");
-                    } else {
-                        String itemName = words[1];
-                        Item item = getItemFromInventory(itemName);
-                        if (item == null) {
-                            item = currentRoom.getItem(itemName);
-                        }
-                        if (item != null) {
-                            item.open();
-                        } else {
-                            System.out.println("No such item to open.");
-                        }
-                    }
-                    break;
-                default:
-                    System.out.println("I don't understand.");
+            case "x":
+                output.append("Thanks for playing the game.\n");
+                break;
+
+            case "take":
+                handleTake(words, output);
+                break;
+
+            case "look":
+                handleLook(words, output);
+                break;
+
+            case "i":
+                handleInventory(output);
+                break;
+
+            case "use":
+                handleUse(words, output);
+                break;
+
+            case "open":
+                handleOpen(words, output);
+                break;
+
+            case "talk":
+                handleTalk(words, output);  // Handle NPC talk here
+                break;
+                
+            default:
+                output.append("I don't understand that command.\n");
+                break;
+        }
+
+        print(output.toString());
+    }
+
+    private static void handleTalk(String[] words, StringBuilder output) {
+        if (words.length < 2) {
+            output.append("Talk to whom?\n");
+        } else {
+            String npcName = words[1];
+            NPC npc = currentRoom.getNPC(npcName);  // Get the NPC from the current room
+            if (npc != null) {
+                npc.talk();  // NPC interaction
+            } else {
+                output.append("No such NPC to talk to.\n");
             }
-        } while (!command.equals("x"));
-        input.close();
+        }
     }
+
+    private static void handleMovement(char direction, StringBuilder output) {
+        Room nextRoom = currentRoom.getExit(direction);
+        if (nextRoom == null) {
+            output.append("There is no exit in that direction.\n");
+        } else if (nextRoom.getLock()) {
+            output.append("You cannot enter. The room is locked.\n");
+        } else {
+            currentRoom = nextRoom;
+            output.append("You moved to the " + currentRoom.getName() + ".\n");
+        }
+    }
+
+    private static void handleTake(String[] words, StringBuilder output) {
+        if (words.length < 2) {
+            output.append("Take what?\n");
+        } else {
+            String itemName = words[1];
+            Item item = currentRoom.getItem(itemName);
+            if (item != null) {
+                inventory.add(item);
+                currentRoom.removeItem(itemName);
+                output.append(itemName + " added to inventory.\n");
+            } else {
+                output.append("No such item to take.\n");
+            }
+        }
+    }
+
+    private static void handleLook(String[] words, StringBuilder output) {
+        if (words.length < 2) {
+            output.append("Look at what?\n");
+        } else {
+            String itemName = words[1];
+            Item item = getItemFromInventory(itemName);
+            if (item != null) {
+                output.append(item.getDescription() + "\n");
+            } else if (currentRoom.getItem(itemName) != null) {
+                output.append(currentRoom.getItem(itemName).getDescription() + "\n");
+            } else {
+                output.append("No such item to look at.\n");
+            }
+        }
+    }
+
+    private static void handleInventory(StringBuilder output) {
+        if (inventory.isEmpty()) {
+            output.append("Inventory empty\n");
+        } else {
+            for (Item i : inventory) {
+                output.append(i + "\n");
+            }
+        }
+    }
+
+    private static void handleUse(String[] words, StringBuilder output) {
+        if (words.length < 2) {
+            output.append("Use what?\n");
+        } else {
+            String itemName = words[1];
+            Item item = getItemFromInventory(itemName);
+            if (item == null) {
+                item = currentRoom.getItem(itemName);
+            }
+            if (item != null) {
+                item.use();
+                output.append(itemName + " used.\n");
+            } else {
+                output.append("No such item to use.\n");
+            }
+        }
+    }
+
+    private static void handleOpen(String[] words, StringBuilder output) {
+        if (words.length < 2) {
+            output.append("Open what?\n");
+        } else {
+            String itemName = words[1];
+            Item item = getItemFromInventory(itemName);
+            if (item == null) {
+                item = currentRoom.getItem(itemName);
+            }
+            if (item != null) {
+                item.open();
+                output.append(itemName + " opened.\n");
+            } else {
+                output.append("No such item to open.\n");
+            }
+        }
+    }
+
     public static Item getItemFromInventory(String itemName) {
         for (Item item : inventory) {
             if (item.getName().equalsIgnoreCase(itemName)) {
@@ -134,6 +184,23 @@ public class Game {
             }
         }
         return null;
+    }
+
+    public static void ReadTextFile() {
+        try {
+            Scanner input = new Scanner(new File("room_desc"));
+            while (input.hasNextLine()) {
+                String name = input.nextLine();
+                String description = input.nextLine();
+
+                if (!name.equals("#") && !description.equals("#")) {
+                    roomDescription.put(name, description);
+                }
+            }
+            input.close();
+        } catch (FileNotFoundException e) {
+            print("File not found: room_desc");
+        }
     }
 }
 

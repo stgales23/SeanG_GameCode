@@ -1,56 +1,44 @@
 package Game;
 
 public class World {
-	public static Room buildWorld() {
-		Room bedroom = new Room("You are in the bed room.", "bedroom");
-		Room hallway = new Room("You are in the hallway.", "hallway");
-		Room bathroom = new Room("You are in the bathroom.", "bathroom");
-		Room bedroom1 = new Room("You are in guest room.", "bedroom1");
-		Room downstairs = new Room("You are downstairs.", "downstairs");
-		Room attic = new Room("You are in the attic.", "attic");
-		
-		bedroom.addExit(bedroom, 's');
-		bedroom.addExit(hallway, 'n');
-		
-		hallway.addExit(hallway, 'n');
-		hallway.addExit(bedroom, 's');
-		hallway.addExit(bathroom, 'w');
-		hallway.addExit(attic, 'u');
-		hallway.addExit(downstairs, 'd');
-		hallway.addExit(bedroom1, 'e');
-		
-		bathroom.addExit(bathroom, 'w');
-		bathroom.addExit(hallway, 'e');
-		
-		bedroom1.addExit(bedroom1, 'e');
-		bedroom1.addExit(hallway, 'w');
-		
-		downstairs.addExit(downstairs, 'd');
-		downstairs.addExit(hallway, 'd');
-		
-		attic.addExit(attic, 'u');
-		attic.addExit(hallway, 'd');
-		attic.setLock(true);	
-		
-		Item toy = new Item("toy","Haven't seen this in ages");
-		Item book = new Item("book","Feels pretty light");
-		Item key = new Item("key", "Wonder what this opens") ;
-		Item paper = new Item("paper","This is door key ");
-		Item towel = new Item("towel","pretty damp");
-		
-		bedroom.addItem(key);
-		bedroom.addItem(toy);
-		bedroom.addItem(book);
-		bathroom.addItem(paper);
-		hallway.addItem(towel);
-		
-		
-		Conbination combination = new Conbination("combination", "A sticky note with numbers written on it.");
-        Safe safe = new Safe("safe", "It's an impressive safe, securely locked.");
+    public static Room buildWorld() {
+        Room livingRoom = new Room("livingRoom");
+        Room kitchen = new Room("kitchen");
+        Room bedroom = new Room("bedroom");
+        Room bathroom = new Room("bathroom");
+        Room garage = new Room("garage");
+        Room hallway = new Room("hallway");
+        Room attic = new Room("attic");
 
-        bedroom1.addItem(combination);
-        attic.addItem(safe);
+        livingRoom.addExit(hallway, 'e');
+        hallway.addExit(livingRoom, 'w');
+        hallway.addExit(kitchen, 'n');
+        hallway.addExit(bedroom, 's');
+        hallway.addExit(bathroom, 'e');
+        hallway.addExit(garage, 'u');
+        hallway.addExit(attic, 'd');
+
+        // Items in the rooms
+        Item wallet = new Wallet("wallet", "A wallet with a few cards and a note inside.");
+        Item shoes = new Shoes("shoes", "A pair of sneakers.");
+        Item broom = new Broom("broom", "A broom to sweep up dust.");
+        Item key = new Item("key", "A key that fits your garage door.");
+        Item fruitBowl = new Item("fruit bowl", "A bowl filled with fresh fruit.");
         
-		return bedroom;
-		}
-	}
+        livingRoom.addItem(wallet);
+        bedroom.addItem(shoes);
+        kitchen.addItem(fruitBowl);
+        hallway.addItem(broom);
+
+        // NPCs in rooms
+        Mom mom = new Mom();
+        Sister sister = new Sister();
+        Cat cat = new Cat();
+
+        livingRoom.addNPC(mom);
+        bedroom.addNPC(sister);
+        hallway.addNPC(cat);
+
+        return livingRoom;
+    }
+}
